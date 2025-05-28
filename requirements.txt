@@ -1,6 +1,7 @@
 altgraph==0.17.4
 asgiref==3.8.1
 Django==5.2.1
+djangorestframework==3.16.0
 et_xmlfile==2.0.0
 gunicorn==23.0.0
 macholib==1.16.3
