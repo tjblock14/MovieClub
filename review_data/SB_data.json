@@ -1,0 +1,18 @@
+[
+    {
+        "title" : "Oppenheimer",
+        "actors" : ["Cillian Murphy", "Emily Blunt", "Matt Damon", "Robert Downey Jr."],
+        "genres" : ["Biography", "Drama", "History"],
+        "director" : "Christopher Nolan",
+        "Sierra_Review" : 
+        {
+            "rating" : 7.0,
+            "description" : "I liked the movie. It was pretty slow and really history heavy which made me super sleepy lol. It kind of reminded me of Interstellar but I liked interstellar better"
+        },
+        "Benett_Review" :
+        {
+            "rating" : 8.9,
+            "description" : "Cinematography was amazing, definitely need to watch it again, lotta information to take in, very slow burn"
+        }
+    }
+]

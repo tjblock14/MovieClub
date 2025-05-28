@@ -1,0 +1,18 @@
+[
+    {
+        "title" : "Oppenheimer",
+        "actors" : ["Cillian Murphy", "Emily Blunt", "Matt Damon", "Robert Downey Jr."],
+        "genres" : ["Biography", "Drama", "History"],
+        "director" : "Christopher Nolan",
+        "Trevor_Review" : 
+        {
+            "rating" : 10.0,
+            "description" : "By far the best movie I have ever seen. It exceeded expectations (which were very high). Christopher Nolan is a genius and this was his best work. I love history movies and this was such an interesting story about a horrific event, executed to perfection."
+        },
+        "Taylor_Review" :
+        {
+            "rating" : 9.8,
+            "description" : "Insane movie. The musical score was classic Christopher Nolan, absolutely mindblowing. I was engaged the whole movie, and how it all came together at the end, it was *chefs kiss*!"
+        }
+    }
+]
