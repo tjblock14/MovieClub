@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-50f%d5%%t6=%g2w%!2oe(p=9d(0=rjp$5a!#95t$@v!s-f^a#l
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'movieclubdatabase.onrender.com'
+]
 
 
 # Application definition
