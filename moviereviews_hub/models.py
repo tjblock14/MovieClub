@@ -10,7 +10,7 @@ class Movie(models.Model):
     director = models.CharField(max_length = 100)
     starring_actors = models.CharField(max_length = 200)
     genres = models.CharField(max_length = 150)
-    slug = models.SlugField(max_length = 200, unique = True, blank = True)
+    slug = models.SlugField(max_length = 200, unique = True, blank = True) # Automatically assigns a slug value to the title
 
     def save(self, *args, **kwargs):
         if not self.slug:
