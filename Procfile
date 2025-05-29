@@ -1,0 +1,1 @@
+web: gunicorn movieclub_backend.wsgi:application
