@@ -7,8 +7,9 @@ from .serializers import MovieSerializer, ReviewSerializer
 
 # Creates REST API for movies (POST, DELETE, UPDATE, etc.)
 class MovieViewSet(viewsets.ModelViewSet):
-    queryset = Movie.objects.all()           # Get all movies from database
+    queryset         = Movie.objects.all()   # Get all movies from database
     serializer_class = MovieSerializer       # Use movie serializer to convert the data
+    lookup_field     = 'slug'               # Use url/<slugified title> rather than url/<id>
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()          # Get all reviews
