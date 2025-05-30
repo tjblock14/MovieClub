@@ -10,5 +10,5 @@ urlpatterns = [
     path('', include(router.urls)),
 
     # This path will return all movies in the database along with all the reviews by a specific couple based on the slug (tt, mn, sb)
-    path('api/couple_reviews/<slug:couple_slug>/', couple_specific_reviews)
+    path('couple_reviews/<slug:couple_slug>/', couple_specific_reviews)
 ]
