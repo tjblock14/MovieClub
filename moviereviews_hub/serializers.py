@@ -15,6 +15,7 @@ class MovieSerializer(serializers.ModelSerializer):
 
 # Serializer for the Review model
 class ReviewSerializer(serializers.ModelSerializer):
+    movie = MovieSerializer()  # Get movie title rather than the ID
     class Meta:
         model = Review
         fields = '__all__'
