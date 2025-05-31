@@ -15,8 +15,6 @@ class MovieSerializer(serializers.ModelSerializer):
 
 # Serializer for the Review model
 class ReviewSerializer(serializers.ModelSerializer):
-    movie = MovieSerializer()  # To dipslay movie title rather than ID
-
     class Meta:
         model = Review
         fields = '__all__'
