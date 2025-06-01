@@ -80,7 +80,6 @@ def couple_specific_reviews(request, couple_slug):
             "director" : movie.director,
             "actors"   : movie.starring_actors,
             "genres"   : movie.genres,
-            "slug"     : movie.slug,
             "reviews"  : reviewer_reviews   # The reviews left by this couple
         })
 
