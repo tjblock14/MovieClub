@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
+from django.contrib.auth.models import User  # For logins
 
 # Create your models here.
 
@@ -27,4 +28,5 @@ class Review(models.Model):
     reviewer = models.CharField(max_length = 15)  # Track whose review this is
     rating = models.FloatField()
     rating_justification = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     # contains_spoiler = models.BooleanField(default = false)  probably will be handled elsewhere

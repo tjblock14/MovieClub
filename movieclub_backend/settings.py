@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-50f%d5%%t6=%g2w%!2oe(p=9d(0=rjp$5a!#95t$@v!s-f^a#l
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'movieclubdatabase.onrender.com'
+    'movieclubdatabase.onrender.com',
 ]
 
 
@@ -52,6 +52,18 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',  # Tracks who a user is
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly', # Controls who can do what with the API. Anyone can GET, but only users that have logged in can POST, etc.
+    ]
+}
+
 
 ROOT_URLCONF = 'movieclub_backend.urls'
 

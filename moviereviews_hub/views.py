@@ -84,4 +84,4 @@ def couple_specific_reviews(request, couple_slug):
         })
 
     # Return the final list with movie info and couple reviews as JSON
-    return Response(response_data)
+    return Response({"results" :response_data} )
