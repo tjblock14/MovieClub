@@ -28,5 +28,5 @@ class Review(models.Model):
     reviewer = models.CharField(max_length = 15)  # Track whose review this is
     rating = models.FloatField()
     rating_justification = models.TextField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     # contains_spoiler = models.BooleanField(default = false)  probably will be handled elsewhere
