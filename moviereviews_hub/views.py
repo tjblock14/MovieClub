@@ -23,10 +23,26 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     # when a user is submitting a review, automatically attach the logged in user to their review field
     def perform_create(self, serializer):
-        serializer.save(
+            # set the user and the reviewer the user that is logged in
             user=self.request.user,
-            reviewer=self.request.user.username
-        )
+            username=self.request.user.username
+
+            user_to_couple = {
+                 "trevor" : "TrevorTaylor",
+                 "taylor" : "TrevorTaylor",
+                 "marissa" : "MarissaNathan",
+                 "nathan" : "MarissaNathan",
+                 "sierra" : "SierraBenett",
+                 "benett" : "SierraBenett"
+            }
+
+            couple_id = user_to_couple.get(username, "uncategorized")
+
+            serializer.save( 
+                 user = user,
+                 reviewer = username,
+                 couple_id = couple_id
+            )
 
 # ========================================
 # Function based views (custom logic for the different couples pages)
