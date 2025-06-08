@@ -2,6 +2,8 @@
 from rest_framework import viewsets
 from .models import Movie, Review
 from .serializers import MovieSerializer, ReviewSerializer
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from .permissions import IsReviewOwnerOrReadOnly
 
 # ===================================================
 #  Create your views here.
@@ -15,8 +17,9 @@ class MovieViewSet(viewsets.ModelViewSet):
     lookup_field     = 'slug'               # Use url/<slugified title> rather than url/<id>
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    queryset = Review.objects.all()          # Get all reviews
+    queryset = Review.objects.all()          # Get all reviews, visible to everyone
     serializer_class = ReviewSerializer      # Use review serializer to covert data
+    permission_classes = [IsAuthenticatedOrReadOnly, IsReviewOwnerOrReadOnly]
 
 # ========================================
 # Function based views (custom logic for the different couples pages)
