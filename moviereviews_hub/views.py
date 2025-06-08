@@ -4,6 +4,7 @@ from .models import Movie, Review
 from .serializers import MovieSerializer, ReviewSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .permissions import IsReviewOwnerOrReadOnly
+from django.utils.functional import SimpleLazyObject
 
 # ===================================================
 #  Create your views here.
@@ -24,8 +25,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
     # when a user is submitting a review, automatically attach the logged in user to their review field
     def perform_create(self, serializer):
             # set the user and the reviewer the user that is logged in
-            user=self.request.user,
+            user=self.request.user
             username=self.request.user.username
+
+            if isinstance(user, SimpleLazyObject):
+                user = user._wrapped
 
             user_to_couple = {
                  "trevor" : "TrevorTaylor",
