@@ -21,6 +21,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer      # Use review serializer to covert data
     permission_classes = [IsAuthenticatedOrReadOnly, IsReviewOwnerOrReadOnly]
 
+    # when a user is submitting a review, automatically attach the logged in user to their review field
+    def perform_create(self, serializer):
+        serializer.save(
+            user=self.request.user,
+            reviewer=self.request.user.username
+        )
+
 # ========================================
 # Function based views (custom logic for the different couples pages)
 # ========================================
