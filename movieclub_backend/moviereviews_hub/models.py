@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils.text import slugify
+from django.contrib.auth.models import User  # For logins
 
 # Create your models here.
 
@@ -9,7 +11,12 @@ class Movie(models.Model):
     director = models.CharField(max_length = 100)
     starring_actors = models.CharField(max_length = 200)
     genres = models.CharField(max_length = 150)
+    slug = models.SlugField(max_length = 200, unique = True, blank = True) # Automatically assigns a slug value to the title
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)  # Slugifying removes punctiation from title and replaces spaces with dashes for better url format
+        super().save(*args, **kwargs)
     
     def __str__(self):
         return self.title
@@ -21,4 +28,5 @@ class Review(models.Model):
     reviewer = models.CharField(max_length = 15)  # Track whose review this is
     rating = models.FloatField()
     rating_justification = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     # contains_spoiler = models.BooleanField(default = false)  probably will be handled elsewhere
