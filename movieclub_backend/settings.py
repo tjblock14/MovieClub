@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',    # Needed for communication between wordpress/squarespace and django
     'moviereviews_hub',  # My movie club application
+    'corsheaders',  # for logins
 ]
 
 MIDDLEWARE = [
@@ -51,6 +52,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+]
+
+# For logging in from the website
+CORS_ALLOWED_ORIGINS = [
+    "https://tntmovieclub.com",   # Your real Elementor/WordPress site
+    "https://www.tntmovieclub.com",  # Add both versions if applicable
 ]
 
 

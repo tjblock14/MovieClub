@@ -2,6 +2,7 @@ altgraph==0.17.4
 asgiref==3.8.1
 dj-database-url==3.0.0
 Django==5.2.1
+django-cors-headers==4.7.0
 djangorestframework==3.16.0
 djangorestframework_simplejwt==5.5.0
 et_xmlfile==2.0.0
