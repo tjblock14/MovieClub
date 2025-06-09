@@ -54,15 +54,16 @@ MIDDLEWARE = [
 ]
 
 
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',  # Tracks who a user is
+        'rest_framework_simplejwt.authentication.JWTAuthentication',   # For token authentication from frontend
+        'rest_framework.authentication.SessionAuthentication',         # Tracks who a user is on api site
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly', # Controls who can do what with the API. Anyone can GET, but only users that have logged in can POST, etc.
     ]
 }
+
 
 
 ROOT_URLCONF = 'movieclub_backend.urls'
