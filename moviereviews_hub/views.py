@@ -2,7 +2,7 @@
 from rest_framework import viewsets
 from .models import Movie, Review
 from .serializers import MovieSerializer, ReviewSerializer
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from .permissions import IsReviewOwnerOrReadOnly
 from django.utils.functional import SimpleLazyObject
 
@@ -16,6 +16,8 @@ class MovieViewSet(viewsets.ModelViewSet):
     queryset         = Movie.objects.all()   # Get all movies from database
     serializer_class = MovieSerializer       # Use movie serializer to convert the data
     lookup_field     = 'slug'               # Use url/<slugified title> rather than url/<id>
+
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()          # Get all reviews, visible to everyone

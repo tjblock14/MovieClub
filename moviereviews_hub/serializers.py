@@ -13,6 +13,11 @@ class MovieSerializer(serializers.ModelSerializer):
         model = Movie       # Map to this model
         fields = '__all__'  # Include all fields from the model
 
+    title = serializers.CharField(required=True)
+    director = serializers.CharField(required=True)
+    actors = serializers.ListField(child=serializers.CharField(), required=True)
+    genres = serializers.ListField(child=serializers.CharField(), required=True)
+
 # Serializer for the Review model
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
