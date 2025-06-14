@@ -11,6 +11,9 @@ from django.contrib.postgres.fields import ArrayField
 class Movie(models.Model):
     title = models.CharField(max_length = 200)
     director = ArrayField(models.CharField(max_length = 100))
+
+    starring_actors = models.CharField(max_length=200, null=True, blank=True)  # keep temp
+
     actors = ArrayField(models.CharField(max_length = 200))
     genres = ArrayField(models.CharField(max_length = 150))
     slug = models.SlugField(max_length = 200, unique = True, blank = True) # Automatically assigns a slug value to the title
