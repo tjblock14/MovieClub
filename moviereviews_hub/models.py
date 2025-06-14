@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.models import User  # For logins
+from django.contrib.postgres.fields import ArrayField
+
 
 # Create your models here.
 
@@ -8,7 +10,7 @@ from django.contrib.auth.models import User  # For logins
 # starring actors, and the main genres of the movie
 class Movie(models.Model):
     title = models.CharField(max_length = 200)
-    director = models.CharField(max_length = 100)
+    director = ArrayField(models.CharField(max_length = 100))
     actors = ArrayField(models.CharField(max_length = 200))
     genres = ArrayField(models.CharField(max_length = 150))
     slug = models.SlugField(max_length = 200, unique = True, blank = True) # Automatically assigns a slug value to the title
