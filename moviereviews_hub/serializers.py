@@ -12,11 +12,12 @@ class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie       # Map to this model
         fields = '__all__'  # Include all fields from the model
-
-    title = serializers.CharField(required=True)
-    director = serializers.CharField(required=True)
-    actors = serializers.ListField(child=serializers.CharField(), required=True)
-    genres = serializers.ListField(child=serializers.CharField(), required=True)
+        extra_kwargs = {
+            'title': {'required': True},
+            'director': {'required': True},
+            'actors': {'required': True},
+            'genres': {'required': True},
+        }
 
 # Serializer for the Review model
 class ReviewSerializer(serializers.ModelSerializer):
