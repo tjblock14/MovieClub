@@ -110,7 +110,7 @@ def couple_specific_reviews(request, couple_slug):
         response_data.append({
             "title"    : movie.title,
             "director" : movie.director,
-            "actors"   : movie.starring_actors,
+            "actors"   : movie.actors,
             "genres"   : movie.genres,
             "reviews"  : reviewer_reviews   # The reviews left by this couple
         })
