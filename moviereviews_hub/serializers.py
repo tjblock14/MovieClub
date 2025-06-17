@@ -9,6 +9,12 @@ from .models import Movie, Review  # Import my models
 
 # Serializer for the Movie model
 class MovieSerializer(serializers.ModelSerializer):
+
+    # Expect a list of items, and each item will be a string
+    director = serializers.ListField(child=serializers.CharField())
+    actors = serializers.ListField(child=serializers.CharField())
+    genres = serializers.ListField(child=serializers.CharField())
+
     class Meta:
         model = Movie       # Map to this model
         fields = '__all__'  # Include all fields from the model
