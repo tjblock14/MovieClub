@@ -9,6 +9,8 @@ from .models import Movie, Review  # Import my models
 # Helper field that accepts either a list or a comma-separated string
 class FlexibleListField(serializers.ListField):
     def to_internal_value(self, data):
+        print("🚨 FlexibleListField triggered for:", data)  # <== Add this line
+
         if isinstance(data, str):
             try:
                 # Try parsing as JSON array
