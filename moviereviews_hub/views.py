@@ -34,12 +34,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
                 user = user._wrapped
 
             user_to_couple = {
-                 "trevor" : "TrevorTaylor",
-                 "taylor" : "TrevorTaylor",
+                 "trevor"  : "TrevorTaylor",
+                 "taylor"  : "TrevorTaylor",
                  "marissa" : "MarissaNathan",
-                 "nathan" : "MarissaNathan",
-                 "sierra" : "SierraBenett",
-                 "benett" : "SierraBenett"
+                 "nathan"  : "MarissaNathan",
+                 "sierra"  : "SierraBenett",
+                 "benett"  : "SierraBenett",
+                 "dad"     : "Dad"
             }
 
             couple_id = user_to_couple.get(username, "uncategorized")
@@ -59,9 +60,10 @@ from rest_framework.response import Response
 
 # Map each slug to a couple ID that is used in the database
 COUPLE_SLUG_TO_ID_MAP = {
-    "tt" : "TrevorTaylor",
-    "mn" : "MarissaNathan",
-    "sb" : "SierraBenett"
+    "tt"  : "TrevorTaylor",
+    "mn"  : "MarissaNathan",
+    "sb"  : "SierraBenett",
+    "dad" : "Dad"
 }
 
 # =================================================
