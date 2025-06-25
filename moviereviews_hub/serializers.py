@@ -35,7 +35,7 @@ class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie       # Map to this model
         fields = '__all__'  # Include all fields from the model
-        extra_kwargs = {
+        extra_kwargs = { # Make all required fields for form submissions
             'title': {'required': True},
             'director': {'required': True},
             'actors': {'required': True},
