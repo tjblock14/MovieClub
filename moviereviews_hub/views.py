@@ -21,7 +21,18 @@ class MovieViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         print("DEBUG incoming request.data:", request.data)  # 👈 Logs the raw input
-        return super().create(request, *args, **kwargs)
+    
+        response = super().create(request, *args, **kwargs)
+        # Print what got saved to the DB
+        slug = response.data.get('slug')
+        if slug:
+            from .models import Movie
+            movie = Movie.objects.get(slug=slug)
+            print("POST-SAVE DB VALUE:")
+            print("  director:", movie.director, type(movie.director))
+            print("  genres  :", movie.genres, type(movie.genres))
+        
+        return response
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()          # Get all reviews, visible to everyone
