@@ -18,6 +18,10 @@ class MovieViewSet(viewsets.ModelViewSet):
     lookup_field     = 'slug'               # Use url/<slugified title> rather than url/<id>
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    def create(self, request, *args, **kwargs):
+        print("DEBUG incoming request.data:", request.data)  # 👈 Logs the raw input
+        return super().create(request, *args, **kwargs)
+
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()          # Get all reviews, visible to everyone
