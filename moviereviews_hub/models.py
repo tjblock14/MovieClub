@@ -10,7 +10,7 @@ from django.contrib.postgres.fields import ArrayField
 # starring actors, and the main genres of the movie
 class Movie(models.Model):
     title = models.CharField(max_length = 200)
-    director = ArrayField(models.CharField(max_length = 100))
+    director = ArrayField(models.CharField(max_length = 100), default = list)
 
     actors = ArrayField(models.CharField(max_length=100), default = list)      # default = list to avoid an issue I was having where
                                                                                # every character was separated by a comma
