@@ -6,31 +6,14 @@ from .models import Movie, Review  # Import my models
 # They also do the opposite in converting incoming JSON to python objects/model instances
 # ===============================================
 
-# Helper field that accepts either a list or a comma-separated string
-class FlexibleListField(serializers.ListField):
-    def to_internal_value(self, data):
-        print("🚨 FlexibleListField triggered for:", data)  # <== Add this line
-
-        if isinstance(data, str):
-            try:
-                # Try parsing as JSON array
-                import json
-                parsed = json.loads(data)
-                if isinstance(parsed, list):
-                    return parsed
-            except:
-                # If it’s just a comma-separated string
-                return [s.strip() for s in data.split(',')]
-        return super().to_internal_value(data)
-
 
 # Serializer for the Movie model
 class MovieSerializer(serializers.ModelSerializer):
 
     # Expect a list of items, and each item will be a string
-    director = FlexibleListField(child=serializers.CharField())
-    actors = FlexibleListField(child=serializers.CharField())
-    genres = FlexibleListField(child=serializers.CharField())
+    director = serializers.ListField(child=serializers.CharField())
+    actors = serializers.ListField(child=serializers.CharField())
+    genres = serializers.ListField(child=serializers.CharField())
 
     class Meta:
         model = Movie       # Map to this model
