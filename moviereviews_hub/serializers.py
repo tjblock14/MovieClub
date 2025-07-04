@@ -20,6 +20,18 @@ class MovieSerializer(serializers.ModelSerializer):
         for key, value in data.items():
             print(f"  {key}: {value} (type: {type(value)})")
         return super().validate(data)
+    
+    def validate_director(self, value):
+        if isinstance(value, str) and value.startswith('{'):
+            print("Fixing malformed string in 'director'")
+            return [s.strip() for s in value.strip('{}').split(',')]
+        return value
+
+    def validate_genres(self, value):
+        if isinstance(value, str) and value.startswith('{'):
+            print("Fixing malformed string in 'genres'")
+            return [s.strip() for s in value.strip('{}').split(',')]
+        return value
 
     class Meta:
         model = Movie       # Map to this model
