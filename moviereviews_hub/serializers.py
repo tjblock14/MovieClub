@@ -15,6 +15,12 @@ class MovieSerializer(serializers.ModelSerializer):
     actors = serializers.ListField(child=serializers.CharField())
     genres = serializers.ListField(child=serializers.CharField())
 
+    def validate(self, data):
+        print("SERIALIZER DEBUG - validated incoming data:")
+        for key, value in data.items():
+            print(f"  {key}: {value} (type: {type(value)})")
+        return super().validate(data)
+
     class Meta:
         model = Movie       # Map to this model
         fields = '__all__'  # Include all fields from the model
