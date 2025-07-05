@@ -12,7 +12,7 @@ class Movie(models.Model):
     title = models.CharField(max_length = 200)
     director = ArrayField(models.CharField(max_length = 100), default = list)
 
-    actors = ArrayField(models.CharField(max_length=100), default = list)      # default = list to avoid an issue I was having where
+    actors = ArrayField(models.CharField(max_length=200), default = list)      # default = list to avoid an issue I was having where
                                                                                # every character was separated by a comma
     genres = ArrayField(models.CharField(max_length = 150), default = list)
     slug = models.SlugField(max_length = 200, unique = True, blank = True) # Automatically assigns a slug value to the title
