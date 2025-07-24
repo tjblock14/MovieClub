@@ -1,14 +1,19 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import MovieViewSet, ReviewViewSet, couple_specific_reviews  # couple specific reviews needed for function based view
+from .views import MovieViewSet, ReviewViewSet, couple_specific_reviews
 
 router = DefaultRouter()
-router.register(r'movies', MovieViewSet, basename = 'movie')
+router.register(r'movies', MovieViewSet, basename='movie')
 router.register(r'reviews', ReviewViewSet)
+
+# Add per-couple routes that support PATCH by ID
+router.register(r'couple_reviews/tt', ReviewViewSet, basename='tt_reviews')
+router.register(r'couple_reviews/mn', ReviewViewSet, basename='mn_reviews')
+router.register(r'couple_reviews/sb', ReviewViewSet, basename='sb_reviews')
 
 urlpatterns = [
     path('', include(router.urls)),
 
-    # This path will return all movies in the database along with all the reviews by a specific couple based on the slug (tt, mn, sb)
-    path('couple_reviews/<slug:couple_slug>/', couple_specific_reviews)
+    # Move your function-based view to its own route
+    path('combined_reviews/<slug:couple_slug>/', couple_specific_reviews),
 ]
