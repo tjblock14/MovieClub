@@ -129,7 +129,8 @@ def couple_specific_reviews(request, couple_slug):
             "director" : movie.director,
             "actors"   : movie.actors,
             "genres"   : movie.genres,
-            "reviews"  : reviewer_reviews   # The reviews left by this couple
+            "reviews"  : reviewer_reviews,   # The reviews left by this couple
+            "movie_id" : movie.id # Needed for editing on the site
         })
 
     # Return the final list with movie info and couple reviews as JSON
