@@ -68,6 +68,11 @@ class MovieSerializer(serializers.ModelSerializer):
 
 # Serializer for the Review model
 class ReviewSerializer(serializers.ModelSerializer):
+
+    # Allow these to be blank for when a user on the site submits new review/rating for new movie
+    rating = serializers.FloatField(required=False, allow_null=True)
+    rating_justification = serializers.CharField(required=False, allow_blank=True)
+
     class Meta:
         model = Review
         fields = '__all__'
