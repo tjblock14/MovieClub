@@ -55,7 +55,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
                  "nathan"  : "MarissaNathan",
                  "sierra"  : "SierraBenett",
                  "benett"  : "SierraBenett",
-                 "dad"     : "Dad"
+                 "rob"     : "MomDad",
+                 "terry"   : "MomDad"
             }
 
             couple_id = user_to_couple.get(username, "uncategorized")
@@ -78,7 +79,7 @@ COUPLE_SLUG_TO_ID_MAP = {
     "tt"  : "TrevorTaylor",
     "mn"  : "MarissaNathan",
     "sb"  : "SierraBenett",
-    "dad" : "Dad"
+    "mom_dad" : "MomDad"
 }
 
 # =================================================
