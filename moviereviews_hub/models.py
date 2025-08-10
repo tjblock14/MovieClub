@@ -19,7 +19,16 @@ class Movie(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)  # Slugifying removes punctiation from title and replaces spaces with dashes for better url format
+            base = slugify(self.title) or "movie"   # Slugifying removes punctuation and replaces spaces with dashes for better URL format
+            candidate = base
+            i = 2
+
+            # Ensure uniqueness across all movies. If "heat" exists, try "heat-2", "heat-3", ...
+            while Movie.objects.filter(slug=candidate).exclude(pk=self.pk).exists():
+                candidate = f"{base}-{i}"
+                i += 1
+
+            self.slug = candidate
         super().save(*args, **kwargs)
     
     def __str__(self):

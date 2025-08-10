@@ -54,6 +54,34 @@ class MovieSerializer(serializers.ModelSerializer):
         print("SERIALIZER DEBUG - validated incoming data:")
         for key, value in data.items():
             print(f"  {key}: {value} (type: {type(value)})")
+
+        # --------------------------------------------------
+        # This part checks for a duplicate entry by checking 
+        # both the title and director fields
+        #---------------------------------------------------
+        title_in = (data.get('title') or '').strip().lower() # Grab the title from payload, remove trailing spaces, make lowercase
+        directors_in = sorted([(d or '').strip().lower() for d in (data.get('director') or [])]) # Grab director list, strip and lowercase each one
+
+        # Only run if both present, kind of redundant since all fields are required for a new movie submission
+        if title_in and directors_in:
+            query_set = Movie.objects.filter(title__iexact=title_in) # Create a set of all movies with the same title
+
+            # Be sure to exclude itself from the set so it does not read itself and think its a duplicate
+            # This prevents any unforseen issues with an update (POST or PATCH)
+            if self.instance and getattr(self.instance, 'pk', None):
+                query_set = query_set.exclude(pk=self.instance.pk)
+
+            # Iterate through all movies with the same title, grab ony the columns we need for this
+            for m in query_set.only('id', 'title', 'director'):
+                existing_directors = sorted([(d or '').strip().lower() for d in (m.director or [])]) # Perform same operations on directors as comparison directors
+                
+                # If the submitted movie's director equals the stored directors with the same title, it is a duplicate
+                if existing_directors == directors_in:
+                    # Key is 'duplicate' so the frontend can show a friendly message
+                    raise serializers.ValidationError({"duplicate": "Movie already exists."})
+
+
+
         return super().validate(data)
 
     class Meta:
