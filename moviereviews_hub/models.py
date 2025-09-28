@@ -36,10 +36,35 @@ class Movie(models.Model):
 
 # This will contain all of the reviews on a movie
 class Review(models.Model):
-    movie = models.ForeignKey(Movie, on_delete = models.CASCADE)  # If a movie is deleted, delete all reviews associated with it
+    movie     = models.ForeignKey(Movie, on_delete = models.CASCADE)  # If a movie is deleted, delete all reviews associated with it
     couple_id = models.CharField(max_length = 20) # Track which couple this review is from
-    reviewer = models.CharField(max_length = 15)  # Track whose review this is
-    rating = models.FloatField(null=True, blank=True)
+    reviewer  = models.CharField(max_length = 15)  # Track whose review this is
+    rating    = models.FloatField(null=True, blank=True)
     rating_justification = models.TextField(blank=True, default="")
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    user      = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     # contains_spoiler = models.BooleanField(default = false)  probably will be handled elsewhere
+
+
+from django.core.validators import MinValueValidator
+# This model will be used for storing TV shows
+class TvShowModel(models.Model):
+    title       = models.CharField(unique = True) # Make sure the tv show is not alreadfy in the database\
+    description = models.TextField(blank = True)  # Descriptionis not required
+    genres      = models.JSONField(default = list)
+    num_seasons = models.PositiveIntegerField(default = 1, validators = [MinValueValidator(1)]) # Any show needs at least one season. Enforce this
+
+    def __str__(self): 
+        return self.title
+    
+# This model will store each season of a TV show
+class TvShowSeason(models.Model):
+    show_title = models.ForeignKey(TvShowModel, on_delete = models.CASCADE, related_name = "seasons") # Show title this season is associated with
+    season_number = models.PositiveIntegerField(validators =[MinValueValidator(1)])                   # Number of the season
+    num_episodes = models.PositiveIntegerField(default = 1, validators = [MinValueValidator(1)])      # Amount of episodes in the season
+
+    class Meta:
+        uniqie_together = ("show", "season_number") # Every show can only have one season number of "1", "2", etc.
+        ordering = ["number"]  # Orders the seasons by number season by default
+
+    def __str__(self): 
+        return f"{self.show_title.title} — S{self.season_number}"
