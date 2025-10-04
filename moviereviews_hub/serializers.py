@@ -32,7 +32,7 @@ def _clean_array_field(value, field_name):
         except json.JSONDecodeError:
             pass
 
-    raise serializers.ValidationError(f"Invalid format for '{field_name}' � expected a list of strings.")
+    raise serializers.ValidationError(f"Invalid format for '{field_name}' — expected a list of strings.")
 
 
 # Serializer for the Movie model
@@ -115,7 +115,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
 
-        # ? Add custom claims
+        # ✅ Add custom claims
         token['username'] = user.username
 
         return token
