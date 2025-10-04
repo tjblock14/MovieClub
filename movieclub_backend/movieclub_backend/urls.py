@@ -16,23 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from moviereviews_hub.views import CustomTokenObtainPairView
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-# your_project/urls.py
-
-
-urlpatterns = [
-    path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
-]
-
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('moviereviews_hub.urls')),
-    path('api-auth/', include('rest_framework.urls')),  # Adds login/logout views for api site
-
-    # JWT tokens for authentication
-    path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api-auth/', include('rest_framework.urls')),  # Adds login/logout views
 ]

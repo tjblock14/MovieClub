@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',    # Needed for communication between wordpress/squarespace and django
     'moviereviews_hub',  # My movie club application
-    'corsheaders',  # for logins
 ]
 
 MIDDLEWARE = [
@@ -52,27 +51,18 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
 ]
 
-# For logging in from the website
-CORS_ALLOWED_ORIGINS = [
-    "https://tntmovieclub.com",   # Your real Elementor/WordPress site
-    "https://www.tntmovieclub.com",  # Add both versions if applicable
-]
 
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',   # For token authentication from frontend
-        'rest_framework.authentication.SessionAuthentication',         # Tracks who a user is on api site
+        'rest_framework.authentication.SessionAuthentication',  # Tracks who a user is
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly', # Controls who can do what with the API. Anyone can GET, but only users that have logged in can POST, etc.
     ]
 }
-
 
 
 ROOT_URLCONF = 'movieclub_backend.urls'
@@ -98,11 +88,11 @@ WSGI_APPLICATION = 'movieclub_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-import dj_database_url
-import os
-
 DATABASES = {
-    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 
