@@ -2,6 +2,9 @@
 from rest_framework import viewsets
 from .models import Movie, Review
 from .serializers import MovieSerializer, ReviewSerializer
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from .permissions import IsReviewOwnerOrReadOnly
+from django.utils.functional import SimpleLazyObject
 
 # ===================================================
 #  Create your views here.
@@ -14,9 +17,55 @@ class MovieViewSet(viewsets.ModelViewSet):
     serializer_class = MovieSerializer       # Use movie serializer to convert the data
     lookup_field     = 'slug'               # Use url/<slugified title> rather than url/<id>
 
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def create(self, request, *args, **kwargs):
+        print("DEBUG incoming request.data:", request.data)  # ?? Logs the raw input
+    
+        response = super().create(request, *args, **kwargs)
+        # Print what got saved to the DB
+        slug = response.data.get('slug')
+        if slug:
+            from .models import Movie
+            movie = Movie.objects.get(slug=slug)
+            print("POST-SAVE DB VALUE:")
+            print("  director:", movie.director, type(movie.director))
+            print("  genres  :", movie.genres, type(movie.genres))
+        
+        return response
+
 class ReviewViewSet(viewsets.ModelViewSet):
-    queryset = Review.objects.all()          # Get all reviews
+    queryset = Review.objects.all()          # Get all reviews, visible to everyone
     serializer_class = ReviewSerializer      # Use review serializer to covert data
+    permission_classes = [IsAuthenticatedOrReadOnly, IsReviewOwnerOrReadOnly]
+
+    # when a user is submitting a review, automatically attach the logged in user to their review field
+    def perform_create(self, serializer):
+            # set the user and the reviewer the user that is logged in
+            user=self.request.user
+            username=self.request.user.username
+
+            if isinstance(user, SimpleLazyObject):
+                user = user._wrapped
+
+            user_to_couple = {
+                 "trevor"  : "TrevorTaylor",
+                 "taylor"  : "TrevorTaylor",
+                 "marissa" : "MarissaNathan",
+                 "nathan"  : "MarissaNathan",
+                 "sierra"  : "SierraBenett",
+                 "benett"  : "SierraBenett",
+                 "rob"     : "MomDad",
+                 "terry"   : "MomDad"
+            }
+
+            couple_id = user_to_couple.get(username, "uncategorized")
+
+            serializer.save( 
+                 user = user,
+                 reviewer = username,
+                 couple_id = couple_id
+            )
 
 # ========================================
 # Function based views (custom logic for the different couples pages)
@@ -27,9 +76,10 @@ from rest_framework.response import Response
 
 # Map each slug to a couple ID that is used in the database
 COUPLE_SLUG_TO_ID_MAP = {
-    "tt" : "TrevorTaylor",
-    "mn" : "MarissaNathan",
-    "sb" : "SierraBenett"
+    "tt"  : "TrevorTaylor",
+    "mn"  : "MarissaNathan",
+    "sb"  : "SierraBenett",
+    "mom_dad" : "MomDad"
 }
 
 # =================================================
@@ -78,10 +128,65 @@ def couple_specific_reviews(request, couple_slug):
         response_data.append({
             "title"    : movie.title,
             "director" : movie.director,
-            "actors"   : movie.starring_actors,
+            "actors"   : movie.actors,
             "genres"   : movie.genres,
-            "reviews"  : reviewer_reviews   # The reviews left by this couple
+            "reviews"  : reviewer_reviews,   # The reviews left by this couple
+            "movie_id" : movie.id # Needed for editing on the site
         })
 
     # Return the final list with movie info and couple reviews as JSON
     return Response({"results" :response_data} )
+
+# your_app/views.py
+
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import CustomTokenObtainPairSerializer
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
+
+#------------------------------------------------------------------------------
+#
+#
+#
+# This is the view set for the club average rating
+#
+#
+#
+#
+#-------------------------------------------------------------------------------
+from django.db.models import Avg, Count
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import Review
+
+@api_view(["GET"])
+def club_average_ratings(_request):
+    movie_query_set = (
+        Review.objects.values("movie__id",
+                              "movie__title",
+                              "movie__director",
+                              "movie__actors",
+                              "movie__genres"
+        )
+        .annotate(
+            avg_rating  = Avg("rating"),
+            num_reviews = Count("id")
+        )
+    )
+
+    results = []
+
+    for movie in movie_query_set:
+        results.append({
+            "movie_id"    : movie["movie__id"],
+            "title"       : movie["movie__title"],
+            "director"   : movie.get("movie__director"),
+            "actors"      : movie.get("movie__actors"),
+            "genres"      : movie.get("movie__genres"),
+            "avg_rating"  : round(movie["avg_rating"], 2) if movie["avg_rating"] is not None else None,
+            "num_reviews" : movie["num_reviews"]
+        })
+
+    return Response({"results" : results})
