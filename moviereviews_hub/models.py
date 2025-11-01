@@ -63,8 +63,8 @@ class TvShowSeason(models.Model):
     num_episodes = models.PositiveIntegerField(default = 1, validators = [MinValueValidator(1)])      # Amount of episodes in the season
 
     class Meta:
-        uniqie_together = ("show", "season_number") # Every show can only have one season number of "1", "2", etc.
-        ordering = ["number"]  # Orders the seasons by number season by default
+        unique_together = ("show_title", "season_number") # Every show can only have one season number of "1", "2", etc.
+        ordering = ["season_number"]  # Orders the seasons by number season by default
 
     def __str__(self): 
         return f"{self.show_title.title} — S{self.season_number}"
