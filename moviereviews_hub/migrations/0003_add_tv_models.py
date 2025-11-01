@@ -25,10 +25,24 @@ class Migration(migrations.Migration):
                 ('num_seasons', models.PositiveIntegerField(default=1, validators=[django.core.validators.MinValueValidator(1)])),
             ],
         ),
-        migrations.RemoveField(
-            model_name='movie',
-            name='starring_actors',
+
+        # --- changed block: safe drop for starring_actors ---
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql='ALTER TABLE "moviereviews_hub_movie" DROP COLUMN IF EXISTS "starring_actors";',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
+            state_operations=[
+                migrations.RemoveField(
+                    model_name='movie',
+                    name='starring_actors',
+                ),
+            ],
         ),
+        # --- end changed block ---
+
         migrations.AddField(
             model_name='movie',
             name='actors',
