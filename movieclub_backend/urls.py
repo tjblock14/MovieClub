@@ -30,6 +30,7 @@ urlpatterns = [
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('moviereviews_hub.urls')),
+    path('api/', include('tvshows_app.urls')),
     path('api-auth/', include('rest_framework.urls')),  # Adds login/logout views for api site
 
     # JWT tokens for authentication
