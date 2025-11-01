@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
             ],
         ),
 
-        # --- changed block: safe drop for starring_actors ---
+        # Safe drop: starring_actors
         migrations.SeparateDatabaseAndState(
             database_operations=[
                 migrations.RunSQL(
@@ -41,13 +41,28 @@ class Migration(migrations.Migration):
                 ),
             ],
         ),
-        # --- end changed block ---
 
-        migrations.AddField(
-            model_name='movie',
-            name='actors',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=200), default=list, size=None),
+        # Safe add: actors (as Postgres text[]). If it already exists, this is a no-op.
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql='ALTER TABLE "moviereviews_hub_movie" ADD COLUMN IF NOT EXISTS "actors" text[];',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
+            state_operations=[
+                migrations.AddField(
+                    model_name='movie',
+                    name='actors',
+                    field=django.contrib.postgres.fields.ArrayField(
+                        base_field=models.CharField(max_length=200),
+                        default=list,
+                        size=None
+                    ),
+                ),
+            ],
         ),
+
         migrations.AddField(
             model_name='review',
             name='user',
