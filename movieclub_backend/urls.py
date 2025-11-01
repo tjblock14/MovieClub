@@ -14,26 +14,26 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+# movieclub_backend/urls.py
 from django.contrib import admin
 from django.urls import path, include
-from moviereviews_hub.views import CustomTokenObtainPairView
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-# your_project/urls.py
+from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import TokenRefreshView
+from moviereviews_hub.views import MovieViewSet, ReviewViewSet, couple_specific_reviews, CustomTokenObtainPairView
+from tvshows_app.views import TvShowViewSet, SeasonViewSet, EpisodeViewSet
 
-
-urlpatterns = [
-    path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
-]
-
-
+router = DefaultRouter()
+router.register(r'movies', MovieViewSet, basename='movie')
+router.register(r'reviews', ReviewViewSet, basename='review')
+router.register(r'shows', TvShowViewSet, basename='tv-show')
+router.register(r'seasons', SeasonViewSet, basename='tv-season')
+router.register(r'episodes', EpisodeViewSet, basename='tv-episode')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('moviereviews_hub.urls')),
-    path('api/', include('tvshows_app.urls')),
-    path('api-auth/', include('rest_framework.urls')),  # Adds login/logout views for api site
-
-    # JWT tokens for authentication
+    path('api/', include(router.urls)),
+    path('api/couple_reviews/<slug:couple_slug>/', couple_specific_reviews),
+    path('api-auth/', include('rest_framework.urls')),
     path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
