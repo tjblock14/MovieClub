@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',    # Needed for communication between wordpress/squarespace and django
     'moviereviews_hub',  # My movie club application
     'corsheaders',  # for logins
+    'tvshows_app',
 ]
 
 MIDDLEWARE = [
