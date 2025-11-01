@@ -63,11 +63,42 @@ class Migration(migrations.Migration):
             ],
         ),
 
-        migrations.AddField(
-            model_name='review',
-            name='user',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+        # ⬇️ CHANGED BLOCK: make review.user add tolerant (column + FK only if missing)
+        migrations.SeparateDatabaseAndState(
+            database_operations=[
+                migrations.RunSQL(
+                    sql='ALTER TABLE "moviereviews_hub_review" ADD COLUMN IF NOT EXISTS "user_id" bigint;',
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+                migrations.RunSQL(
+                    sql=r"""
+                    DO $$
+                    BEGIN
+                        IF NOT EXISTS (
+                            SELECT 1
+                            FROM pg_constraint
+                            WHERE conname = 'moviereviews_hub_review_user_id_fk'
+                        ) THEN
+                            ALTER TABLE "moviereviews_hub_review"
+                              ADD CONSTRAINT "moviereviews_hub_review_user_id_fk"
+                              FOREIGN KEY ("user_id")
+                              REFERENCES "auth_user" ("id")
+                              ON DELETE CASCADE;
+                        END IF;
+                    END$$;
+                    """,
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
+            state_operations=[
+                migrations.AddField(
+                    model_name='review',
+                    name='user',
+                    field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+                ),
+            ],
         ),
+
         migrations.AlterField(
             model_name='movie',
             name='director',
@@ -88,6 +119,7 @@ class Migration(migrations.Migration):
             name='rating_justification',
             field=models.TextField(blank=True, default=''),
         ),
+
         migrations.CreateModel(
             name='TvShowSeason',
             fields=[
