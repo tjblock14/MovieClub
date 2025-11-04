@@ -56,7 +56,9 @@ class ReviewViewSet(viewsets.ModelViewSet):
                  "sierra"  : "SierraBenett",
                  "benett"  : "SierraBenett",
                  "rob"     : "MomDad",
-                 "terry"   : "MomDad"
+                 "terry"   : "MomDad",
+                 "mia"     : "MiaLogan",
+                 "logan"   : "MiaLogan"
             }
 
             couple_id = user_to_couple.get(username, "uncategorized")
@@ -79,7 +81,8 @@ COUPLE_SLUG_TO_ID_MAP = {
     "tt"  : "TrevorTaylor",
     "mn"  : "MarissaNathan",
     "sb"  : "SierraBenett",
-    "mom_dad" : "MomDad"
+    "mom_dad" : "MomDad",
+    "ml"  : "MiaLogan",
 }
 
 # =================================================
@@ -144,3 +147,49 @@ from .serializers import CustomTokenObtainPairSerializer
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+
+
+#------------------------------------------------------------------------------
+#
+#
+#
+# This is the view set for the club average rating
+#
+#
+#
+#
+#-------------------------------------------------------------------------------
+from django.db.models import Avg, Count
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import Review
+
+@api_view(["GET"])
+def club_average_ratings(_request):
+    movie_query_set = (
+        Review.objects.values("movie__id",
+                              "movie__title",
+                              "movie__director",
+                              "movie__actors",
+                              "movie__genres"
+        )
+        .annotate(
+            avg_rating  = Avg("rating"),
+            num_reviews = Count("id")
+        )
+    )
+
+    results = []
+
+    for movie in movie_query_set:
+        results.append({
+            "movie_id"    : movie["movie__id"],
+            "title"       : movie["movie__title"],
+            "director"   : movie.get("movie__director"),
+            "actors"      : movie.get("movie__actors"),
+            "genres"      : movie.get("movie__genres"),
+            "avg_rating"  : round(movie["avg_rating"], 2) if movie["avg_rating"] is not None else None,
+            "num_reviews" : movie["num_reviews"]
+        })
+
+    return Response({"results" : results})
