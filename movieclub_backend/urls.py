@@ -38,5 +38,5 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     # This path returns every movie with its club average rating
-    path('club_average/', club_average_ratings, name = 'club_average'),
+    path('api/club_average/', club_average_ratings, name = 'club_average'),
 ]
