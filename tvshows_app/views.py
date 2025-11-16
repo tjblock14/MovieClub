@@ -8,11 +8,10 @@ from .models import TvShow, Season, Episode
 
 
 from django.utils.text import slugify
-import requests
 
 
 
-class TvShowViewSet(viewsets.ReadOnlyModelViewSet):
+class TvShowViewSet(viewsets.ModelViewSet):
     queryset = TvShow.objects.all().prefetch_related("seasons__episodes")
     serializer_class = TvShowSerializer
     lookup_field = "slug"
