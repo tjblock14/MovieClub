@@ -43,15 +43,3 @@ class Review(models.Model):
     rating_justification = models.TextField(blank=True, default="")
     user      = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     # contains_spoiler = models.BooleanField(default = false)  probably will be handled elsewhere
-
-
-from django.core.validators import MinValueValidator
-# This model will be used for storing TV shows
-class TvShowModel(models.Model):
-    title       = models.CharField(unique = True) # Make sure the tv show is not alreadfy in the database\
-    description = models.TextField(blank = True)  # Descriptionis not required
-    genres      = models.JSONField(default = list)
-    num_seasons = models.PositiveIntegerField(default = 1, validators = [MinValueValidator(1)]) # Any show needs at least one season. Enforce this
-
-    def __str__(self): 
-        return self.title

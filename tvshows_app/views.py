@@ -101,3 +101,45 @@ class SeasonViewSet(viewsets.ReadOnlyModelViewSet):
 class EpisodeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Episode.objects.select_related("season_number", "season_number__show")
     serializer_class = EpisodeSerializer
+
+
+from rest_framework import viewsets, permissions
+from .models import TvShowRatingsAndReviews
+from .serializers import TvShowReviewSerializer
+
+# Create a viewset that inherits the Model View set
+class TvShowReviewsViewSet(viewsets.ModelViewSet):
+    serializer_class = TvShowReviewSerializer # Serializer to use for input/output validation
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly] # controls access, only logged in users can edit
+
+    # What reviews to return when someone performs a GET request
+    def get_queryset(self):
+        qs = TvShowRatingsAndReviews.objects.select_related( # select_related tells Django to prefetch related objects in the same database query
+            'tv_show_type', 'tv_season_type', 'tv_episode_type', 'reviewer'
+        )
+
+        # Pull query parameters from the request URL
+        target_type = self.request.query_params.get('target_type')
+        show_id = self.request.query_params.get('show_id')
+        season_id = self.request.query_params.get('season_id')
+        episode_id = self.request.query_params.get('episode_id')
+        couple_slug = self.request.query_params.get('couple_slug')
+
+        # Add a .filter to the query if the user provided that parameter
+        if target_type:
+            qs = qs.filter(target_type = target_type)
+        if show_id:
+            qs = qs.filter(tv_show_id = show_id) # Only include reviews whose tv_show_type foreign key has this ID
+        if season_id:
+            qs = qs.filter(season_id = season_id)
+        if episode_id:
+            qs = qs.filter(episode_id = episode_id)
+        if couple_slug:
+            qs = qs.filter(couple_slug = couple_slug)
+
+        return qs # Return the filtered queryset, returning relevant reviews
+    
+    # Called when a POST request happens (A new review)
+    def perform_create(self, serializer):
+        # Garuntee that reviewer is set is serializer.create
+        serializer.save(reviewer = self.request.user) # .save() triggers create() logic, inserting the record

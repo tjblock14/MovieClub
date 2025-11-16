@@ -20,7 +20,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 from moviereviews_hub.views import MovieViewSet, ReviewViewSet, couple_specific_reviews, CustomTokenObtainPairView, club_average_ratings
-from tvshows_app.views import TvShowViewSet, SeasonViewSet, EpisodeViewSet
+from tvshows_app.views import TvShowViewSet, SeasonViewSet, EpisodeViewSet, TvShowReviewsViewSet
 
 router = DefaultRouter()
 router.register(r'movies', MovieViewSet, basename='movie')
@@ -28,6 +28,7 @@ router.register(r'reviews', ReviewViewSet, basename='review')
 router.register(r'shows', TvShowViewSet, basename='tv-show')
 router.register(r'seasons', SeasonViewSet, basename='tv-season')
 router.register(r'episodes', EpisodeViewSet, basename='tv-episode')
+router.register(r'tv-reviews', TvShowReviewsViewSet, basename='tv-reviews')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -36,6 +37,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
 
     # This path returns every movie with its club average rating
     path('api/club_average/', club_average_ratings, name = 'club_average'),
