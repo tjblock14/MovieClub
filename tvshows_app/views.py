@@ -228,7 +228,9 @@ def tvShow_reviews_by_couple(request, couple_slug):
                 "genres" : show.genres,
                 "premiered" : show.premiered,
                 "image_url" : show.image_url,
-                "reviews" : reviewer_reviews
+                "reviews" : reviewer_reviews,
+                "creators" : show.creators,
+                "status" : show.status
             }
         )
 
