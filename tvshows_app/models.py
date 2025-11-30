@@ -14,7 +14,8 @@ class TvShow(models.Model):
     genres      = models.JSONField(default = list, blank = True)
     image_url   = models.URLField(blank = True)
     premiered   = models.DateField(null = True, blank = True)
-    #status      = models.CharField(max_length = 64, blank = True)
+    creators    = models.JSONField(default = list, blank = True)
+    status      = models.CharField(max_length = 64, blank = True)
     #created_at  = models.DateTimeField(auto_now_add = True)
     #updated_at  = models.DateTimeField(auto_now = True)
 

@@ -38,6 +38,15 @@ class TvShowViewSet(viewsets.ModelViewSet):
         show_data = r.json()
 
         title = show_data.get("name") or f"Show {tvmaze_id}"
+
+        creators_list = []
+        for crew in show_data.get("_embedded", {}).get("crew", []):
+            if crew.get("type") == "Creator":
+                person = crew.get("person", {})
+                name = person.get("name")
+                if name:
+                    creators_list.append(name)
+
         show = TvShow.objects.create(
             TvMazeAPIid=tvmaze_id,
             title=title,
@@ -47,6 +56,8 @@ class TvShowViewSet(viewsets.ModelViewSet):
             image_url=(show_data.get("image") or {}).get("original")
                       or (show_data.get("image") or {}).get("medium") or "",
             premiered=show_data.get("premiered"),
+            creators = creators_list,
+            status = show_data.get("status") or ""
         )
 
         # 2️⃣ Fetch seasons

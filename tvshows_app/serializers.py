@@ -46,7 +46,9 @@ class TvShowSerializer(serializers.ModelSerializer):
             "genres",
             "image_url",
             "premiered",
-            "seasons"
+            "seasons",
+            "creators",
+            "status"
         ]
 
 
