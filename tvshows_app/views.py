@@ -230,7 +230,8 @@ def tvShow_reviews_by_couple(request, couple_slug):
                 "image_url" : show.image_url,
                 "reviews" : reviewer_reviews,
                 "creators" : show.creators,
-                "status" : show.status
+                "status" : show.status,
+                "num_seasons" : show.seasons.count()
             }
         )
 
