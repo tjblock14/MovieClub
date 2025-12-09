@@ -134,7 +134,7 @@ class TvShowRatingsAndReviews(models.Model):
     couple_slug = models.SlugField(max_length = 100, blank = True)
 
     # Where the actual numeric rating will be stored
-    rating = models.PositiveSmallIntegerField(
+    rating = models.FloatField(
         validators = [
             MinValueValidator(0),
             MaxValueValidator(10)
