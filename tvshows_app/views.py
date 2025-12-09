@@ -117,6 +117,7 @@ class EpisodeViewSet(viewsets.ReadOnlyModelViewSet):
 from rest_framework import viewsets, permissions
 from .models import TvShowRatingsAndReviews
 from .serializers import TvShowReviewSerializer
+from django.utils.functional import SimpleLazyObject
 
 # Create a viewset that inherits the Model View set
 class TvShowReviewsViewSet(viewsets.ModelViewSet):
@@ -152,8 +153,33 @@ class TvShowReviewsViewSet(viewsets.ModelViewSet):
     
     # Called when a POST request happens (A new review)
     def perform_create(self, serializer):
-        # Gaurantee that reviewer is set is serializer.create
-        serializer.save(reviewer = self.request.user) # .save() triggers create() logic, inserting the record
+        user = self.request.user
+        username = self.request.user.username
+
+        # unwrap SimpleLazyObject if needed
+        if isinstance(user, SimpleLazyObject):
+            user = user._wrapped
+
+        user_to_couple = {
+                 "trevor"  : "TrevorTaylor",
+                 "taylor"  : "TrevorTaylor",
+                 "marissa" : "MarissaNathan",
+                 "nathan"  : "MarissaNathan",
+                 "sierra"  : "SierraBenett",
+                 "benett"  : "SierraBenett",
+                 "rob"     : "MomDad",
+                 "terry"   : "MomDad",
+                 "mia"     : "MiaLogan",
+                 "logan"   : "MiaLogan"
+            }
+        
+        couple_id = user_to_couple.get(username, "uncategorized")
+
+        serializer.save(
+            user = user,
+            reviewer = username,
+            couple_slug = couple_id
+        )
 
 
 #=======================================================
