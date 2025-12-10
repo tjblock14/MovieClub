@@ -154,7 +154,7 @@ class TvShowReviewsViewSet(viewsets.ModelViewSet):
     # Called when a POST request happens (A new review)
     def perform_create(self, serializer):
         user = self.request.user
-        username = self.request.user.username
+        username = user.username.lower()
 
         # unwrap SimpleLazyObject if needed
         if isinstance(user, SimpleLazyObject):
@@ -243,7 +243,7 @@ def tvShow_reviews_by_couple(request, couple_slug):
 
             reviewer_reviews[reviewer_name] = {
                 "rating" : review.rating,
-                "review" : review.review_justification
+                "review" : review.rating_justification
             }
 
         response_data.append(
@@ -290,7 +290,7 @@ def tvSeason_reviews_by_couple(request, couple_slug):
 
             reviewer_reviews[reviewer_name] = {
                 "rating" : review.rating,
-                "review" : review.review_justification
+                "review" : review.rating_justification
             }
 
             show = season.show
@@ -336,7 +336,7 @@ def tvEpisode_reviews_by_couple(request, couple_slug):
 
             reviewer_reviews[reviewer_name] = {
                 "rating" : review.rating,
-                "review" : review.review_justification
+                "review" : review.rating_justification
             }
 
             season = episode.season_number

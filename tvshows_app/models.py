@@ -141,7 +141,7 @@ class TvShowRatingsAndReviews(models.Model):
         ]
     )
 
-    review_justification = models.TextField(
+    rating_justification = models.TextField(
         blank = True,
     )
 

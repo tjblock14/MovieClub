@@ -69,7 +69,7 @@ class TvShowReviewSerializer(serializers.ModelSerializer):
             'tv_episode_type',
             'target_id',
             'rating',
-            'review_justification',
+            'rating_justification',
             'reviewer',
             'couple_slug',
         ]
