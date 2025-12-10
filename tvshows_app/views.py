@@ -175,11 +175,7 @@ class TvShowReviewsViewSet(viewsets.ModelViewSet):
         
         couple_id = user_to_couple.get(username, "uncategorized")
 
-        serializer.save(
-            user = user,
-            reviewer = username,
-            couple_slug = couple_id
-        )
+        serializer.save(couple_slug = couple_id)
 
 
 #=======================================================
