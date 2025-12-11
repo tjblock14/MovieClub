@@ -220,24 +220,23 @@ def tvShow_reviews_by_couple(request, couple_slug):
     couple_id = COUPLE_SLUG_TO_ID_MAP[slug]
     
     # Get all of the Tv Shows in the database
-    all_TvShows = TvShow.objects.all()
+    all_TvShows = TvShow.objects.all().prefetch_related("seasons__episodes")
+
+    serialized_TvShows = TvShowSerializer(all_TvShows, many = True).data
 
     # Initialize a list that will be separated per show with the couple's reviews included
     response_data = []
 
-    # For every show in the datatbase, grab reviews by both members of the couple
-    for show in all_TvShows:
-        # Filter through the review table in database, returns reviews that belong to current tv show and are written by current couple
-        reviews = TvShowRatingsAndReviews.objects.filter(
-                                    target_type = TvShowRatingsAndReviews.TARGET_SHOW,
-                                    tv_show_type = show,
-                                    couple_slug = couple_id
-        ).select_related("reviewer")
-
-         # Create an empty dictionary that will contain the reviews from each person as a key-value pair
+    for show_obj, show_data in zip(all_TvShows, serialized_TvShows):
+        reviews_qs = TvShowRatingsAndReviews.objects.filter(
+                target_type = TvShowRatingsAndReviews.TARGET_SHOW,
+                tv_show_type = show_obj,
+                couple_slug = couple_id
+            ).select_related("reviewer")
+        
         reviewer_reviews = {}
 
-        for review in reviews:
+        for review in reviews_qs:
             reviewer_name = get_normalized_reviewer_name(review.reviewer)
 
             reviewer_reviews[reviewer_name] = {
@@ -245,22 +244,12 @@ def tvShow_reviews_by_couple(request, couple_slug):
                 "review" : review.rating_justification
             }
 
-        response_data.append(
-            {
-                "id" : show.id,
-                "title" : show.title,
-                "summary" : show.summary,
-                "genres" : show.genres,
-                "premiered" : show.premiered,
-                "image_url" : show.image_url,
-                "reviews" : reviewer_reviews,
-                "creators" : show.creators,
-                "status" : show.status,
-                "num_seasons" : show.seasons.count()
-            }
-        )
+        show_data["reviews"] = reviewer_reviews
+        show_data["num_seasons"] = len(show_data.get("seasons", []))
 
-    return Response({"results" : response_data})
+        response_data.append(show_data)
+
+    return Response({"results": response_data})
 
 
 @api_view(['GET'])
