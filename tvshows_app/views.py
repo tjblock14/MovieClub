@@ -216,6 +216,9 @@ def tvShow_reviews_by_couple(request, couple_slug):
     if slug not in COUPLE_SLUG_TO_ID_MAP:
         return Response({"error":"Invalid couple slug"}, status = 400)
     
+    # Map the slug to the correct couple ID
+    couple_id = COUPLE_SLUG_TO_ID_MAP[slug]
+    
     # Get all of the Tv Shows in the database
     all_TvShows = TvShow.objects.all()
 
@@ -228,7 +231,7 @@ def tvShow_reviews_by_couple(request, couple_slug):
         reviews = TvShowRatingsAndReviews.objects.filter(
                                     target_type = TvShowRatingsAndReviews.TARGET_SHOW,
                                     tv_show_type = show,
-                                    couple_slug = slug
+                                    couple_slug = couple_id
         ).select_related("reviewer")
 
          # Create an empty dictionary that will contain the reviews from each person as a key-value pair
@@ -267,6 +270,9 @@ def tvSeason_reviews_by_couple(request, couple_slug):
     if slug not in COUPLE_SLUG_TO_ID_MAP:
         return Response({"error":"Invalid couple slug"}, status = 400)
     
+    # Map the slug to the correct couple ID
+    couple_id = COUPLE_SLUG_TO_ID_MAP[slug]
+    
     # Get all seasons and also load the related TV show for all seasons in the database
     all_seasons = Season.objects.select_related('show').all()
 
@@ -276,7 +282,7 @@ def tvSeason_reviews_by_couple(request, couple_slug):
         reviews = TvShowRatingsAndReviews.objects.filter(
                                 target_type = TvShowRatingsAndReviews.TARGET_SEASON,
                                 tv_season_type = season,
-                                couple_slug = slug
+                                couple_slug = couple_id
         ).select_related("reviewer")
 
         reviewer_reviews = {}
@@ -314,6 +320,9 @@ def tvEpisode_reviews_by_couple(request, couple_slug):
     if slug not in COUPLE_SLUG_TO_ID_MAP:
         return Response({"error":"Invalid couple slug"}, status = 400)
     
+    # Map the slug to the correct couple ID
+    couple_id = COUPLE_SLUG_TO_ID_MAP[slug]
+    
     all_episodes = Episode.objects.select_related('season_number', 'season_number__show').all()
 
     response_data = []
@@ -322,7 +331,7 @@ def tvEpisode_reviews_by_couple(request, couple_slug):
         reviews = TvShowRatingsAndReviews.objects.filter(
                         target_type = TvShowRatingsAndReviews.TARGET_EPISODE,
                         tv_episode_type = episode,
-                        couple_slug = slug
+                        couple_slug = couple_id
         ).select_related("reviewer")
 
         reviewer_reviews = {}
