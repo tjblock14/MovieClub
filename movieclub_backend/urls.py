@@ -41,8 +41,8 @@ urlpatterns = [
 
     # TV Review endpoints
     path('api/tv/couple/shows/<slug:couple_slug>/', tvShow_reviews_by_couple, name='tv_shows_by_couple'),
-    path('api/tv/couple/seasons/<slug:couple_slug>/', tvSeason_reviews_by_couple, name='tv_seasons_by_couple'),
-    path('api/tv/couple/episodes/<slug:couple_slug>/', tvEpisode_reviews_by_couple, name='tv_episodes_by_couple'),
+    # path('api/tv/couple/seasons/<slug:couple_slug>/', tvSeason_reviews_by_couple, name='tv_seasons_by_couple'),
+    # path('api/tv/couple/episodes/<slug:couple_slug>/', tvEpisode_reviews_by_couple, name='tv_episodes_by_couple'),
 
     # This path returns every movie with its club average rating
     path('api/club_average/', club_average_ratings, name = 'club_average'),
