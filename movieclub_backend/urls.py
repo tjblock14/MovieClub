@@ -21,7 +21,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 from moviereviews_hub.views import MovieViewSet, ReviewViewSet, couple_specific_reviews, CustomTokenObtainPairView, club_average_ratings
 from tvshows_app.views import TvShowViewSet, SeasonViewSet, EpisodeViewSet, TvShowReviewsViewSet
-from tvshows_app.views import tvShow_reviews_by_couple, tvSeason_reviews_by_couple, tvEpisode_reviews_by_couple
+from tvshows_app.views import tvShow_reviews_by_couple #, tvSeason_reviews_by_couple, tvEpisode_reviews_by_couple
 
 router = DefaultRouter()
 router.register(r'movies', MovieViewSet, basename='movie')
