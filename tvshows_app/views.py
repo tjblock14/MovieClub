@@ -208,148 +208,181 @@ def get_normalized_reviewer_name(user):
 #   - a list of python dictionaries with each one containing Tv show/season/episode information and the reviews from that specific couple
 #       - dictionary stores like this key : value
 # =================================================
+from collections import defaultdict
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
 @api_view(['GET'])
 def tvShow_reviews_by_couple(request, couple_slug):
     # First, convert the slug to the couple ID used in the database
     slug = couple_slug.lower()
 
     if slug not in COUPLE_SLUG_TO_ID_MAP:
-        return Response({"error":"Invalid couple slug"}, status = 400)
-    
+        return Response({"error": "Invalid couple slug"}, status=400)
+
     # Map the slug to the correct couple ID
     couple_id = COUPLE_SLUG_TO_ID_MAP[slug]
-    
-    # Get all of the Tv Shows in the database
+
+    # Get all of the Tv Shows in the database (prefetch seasons + episodes for nested serializer)
     all_TvShows = TvShow.objects.all().prefetch_related("seasons__episodes")
+    serialized_TvShows = TvShowSerializer(all_TvShows, many=True).data
 
-    serialized_TvShows = TvShowSerializer(all_TvShows, many = True).data
+    # Pull ALL reviews for this couple in ONE query (show + season + episode)
+    all_reviews = (
+        TvShowRatingsAndReviews.objects
+        .filter(couple_slug=couple_id)
+        .select_related("reviewer", "tv_show_type", "tv_season_type", "tv_episode_type")
+    )
 
-    # Initialize a list that will be separated per show with the couple's reviews included
+    # Build fast lookup maps:
+    #   show_id -> { ReviewerName: {id, rating, review} }
+    #   season_id -> { ReviewerName: {id, rating, review} }
+    #   episode_id -> { ReviewerName: {id, rating, review} }
+    show_reviews_map = defaultdict(dict)
+    season_reviews_map = defaultdict(dict)
+    episode_reviews_map = defaultdict(dict)
+
+    for r in all_reviews:
+        reviewer_name = get_normalized_reviewer_name(r.reviewer)
+
+        payload = {
+            "id": r.id,
+            "rating": r.rating,
+            "review": r.rating_justification,
+        }
+
+        if r.target_type == TvShowRatingsAndReviews.TARGET_SHOW and r.tv_show_type_id:
+            show_reviews_map[r.tv_show_type_id][reviewer_name] = payload
+
+        elif r.target_type == TvShowRatingsAndReviews.TARGET_SEASON and r.tv_season_type_id:
+            season_reviews_map[r.tv_season_type_id][reviewer_name] = payload
+
+        elif r.target_type == TvShowRatingsAndReviews.TARGET_EPISODE and r.tv_episode_type_id:
+            episode_reviews_map[r.tv_episode_type_id][reviewer_name] = payload
+
+    # Attach reviews into the serialized nested structure
     response_data = []
 
     for show_obj, show_data in zip(all_TvShows, serialized_TvShows):
-        reviews_qs = TvShowRatingsAndReviews.objects.filter(
-                target_type = TvShowRatingsAndReviews.TARGET_SHOW,
-                tv_show_type = show_obj,
-                couple_slug = couple_id
-            ).select_related("reviewer")
-        
-        reviewer_reviews = {}
+        show_id = show_obj.id
 
-        for review in reviews_qs:
-            reviewer_name = get_normalized_reviewer_name(review.reviewer)
-
-            reviewer_reviews[reviewer_name] = {
-                "rating" : review.rating,
-                "review" : review.rating_justification
-            }
-
-        show_data["reviews"] = reviewer_reviews
+        # Show-level reviews
+        show_data["reviews"] = show_reviews_map.get(show_id, {})
         show_data["num_seasons"] = len(show_data.get("seasons", []))
+
+        # Season + Episode reviews INSIDE the nested objects
+        for season_data in show_data.get("seasons", []):
+            season_id = season_data.get("id")
+            season_data["reviews"] = season_reviews_map.get(season_id, {})
+
+            for ep_data in season_data.get("episodes", []):
+                ep_id = ep_data.get("id")
+                ep_data["reviews"] = episode_reviews_map.get(ep_id, {})
 
         response_data.append(show_data)
 
     return Response({"results": response_data})
 
 
-@api_view(['GET'])
-def tvSeason_reviews_by_couple(request, couple_slug):
-    slug = couple_slug.lower()
 
-    if slug not in COUPLE_SLUG_TO_ID_MAP:
-        return Response({"error":"Invalid couple slug"}, status = 400)
-    
-    # Map the slug to the correct couple ID
-    couple_id = COUPLE_SLUG_TO_ID_MAP[slug]
-    
-    # Get all seasons and also load the related TV show for all seasons in the database
-    all_seasons = Season.objects.select_related('show').all()
-
-    response_data = []
-
-    for season in all_seasons:
-        reviews = TvShowRatingsAndReviews.objects.filter(
-                                target_type = TvShowRatingsAndReviews.TARGET_SEASON,
-                                tv_season_type = season,
-                                couple_slug = couple_id
-        ).select_related("reviewer")
-
-        reviewer_reviews = {}
-
-        for review in reviews:
-            reviewer_name = get_normalized_reviewer_name(review.reviewer)
-
-            reviewer_reviews[reviewer_name] = {
-                "rating" : review.rating,
-                "review" : review.rating_justification
-            }
-
-            show = season.show
-
-        response_data.append(
-            {
-                "show_title" : show.title,
-                "season_number" : season.season_number,
-                "season_summary" : season.summary,
-                "release_year" : season.season_release_year,
-                "episode_cnt" : season.season_episode_cnt,
-                "season_id" : season.id,
-                "show_id" : show.id,
-                "reviews" : reviewer_reviews
-            }
-        )
-
-    return Response({"results" : response_data})
-        
-
-@api_view(['GET'])
-def tvEpisode_reviews_by_couple(request, couple_slug):
-    slug = couple_slug.lower()
-
-    if slug not in COUPLE_SLUG_TO_ID_MAP:
-        return Response({"error":"Invalid couple slug"}, status = 400)
-    
-    # Map the slug to the correct couple ID
-    couple_id = COUPLE_SLUG_TO_ID_MAP[slug]
-    
-    all_episodes = Episode.objects.select_related('season_number', 'season_number__show').all()
-
-    response_data = []
-
-    for episode in all_episodes:
-        reviews = TvShowRatingsAndReviews.objects.filter(
-                        target_type = TvShowRatingsAndReviews.TARGET_EPISODE,
-                        tv_episode_type = episode,
-                        couple_slug = couple_id
-        ).select_related("reviewer")
-
-        reviewer_reviews = {}
-
-        for review in reviews:
-            reviewer_name = get_normalized_reviewer_name(review.reviewer)
-
-            reviewer_reviews[reviewer_name] = {
-                "rating" : review.rating,
-                "review" : review.rating_justification
-            }
-
-            season = episode.season_number
-            show = season.show
-
-        response_data.append(
-            {
-                "show_title" : show.title,
-                "season_number" : season.season_number,
-                "episode_number" : episode.episode_number,
-                "episode_title" : episode.episode_title,
-                "air_date" : episode.air_date,
-                "runtime" : episode.episode_runtime,
-                "summary" : episode.summary,
-                "show_id" : show.id,
-                "season_id" : season.id,
-                "episode_id" : episode.id,
-                "reviews" : reviewer_reviews
-            }
-        )
-
-    return Response({"results" : response_data})
+#@api_view(['GET'])
+#def tvSeason_reviews_by_couple(request, couple_slug):
+#    slug = couple_slug.lower()
+#
+#   if slug not in COUPLE_SLUG_TO_ID_MAP:
+#       return Response({"error":"Invalid couple slug"}, status = 400)
+#    
+#    # Map the slug to the correct couple ID
+#    couple_id = COUPLE_SLUG_TO_ID_MAP[slug]
+#    
+#    # Get all seasons and also load the related TV show for all seasons in the database
+#    all_seasons = Season.objects.select_related('show').all()
+#
+#    response_data = []
+#
+#    for season in all_seasons:
+#        reviews = TvShowRatingsAndReviews.objects.filter(
+#                                target_type = TvShowRatingsAndReviews.TARGET_SEASON,
+#                                tv_season_type = season,
+#                                couple_slug = couple_id
+#        ).select_related("reviewer")
+#
+#        reviewer_reviews = {}
+#
+#        for review in reviews:
+#            reviewer_name = get_normalized_reviewer_name(review.reviewer)
+#
+#            reviewer_reviews[reviewer_name] = {
+#                "rating" : review.rating,
+#                "review" : review.rating_justification
+#            }
+#
+#            show = season.show
+#
+#        response_data.append(
+#            {
+#                "show_title" : show.title,
+#                "season_number" : season.season_number,
+#                "season_summary" : season.summary,
+#                "release_year" : season.season_release_year,
+#                "episode_cnt" : season.season_episode_cnt,
+#                "season_id" : season.id,
+#                "show_id" : show.id,
+#                "reviews" : reviewer_reviews
+#            }
+#        )
+#
+#    return Response({"results" : response_data})
+#        
+#
+#@api_view(['GET'])
+#def tvEpisode_reviews_by_couple(request, couple_slug):
+#    slug = couple_slug.lower()
+#
+#    if slug not in COUPLE_SLUG_TO_ID_MAP:
+#        return Response({"error":"Invalid couple slug"}, status = 400)
+#    
+#    # Map the slug to the correct couple ID
+#    couple_id = COUPLE_SLUG_TO_ID_MAP[slug]
+#    
+#    all_episodes = Episode.objects.select_related('season_number', 'season_number__show').all()
+#
+#    response_data = []
+#
+#    for episode in all_episodes:
+#        reviews = TvShowRatingsAndReviews.objects.filter(
+#                        target_type = TvShowRatingsAndReviews.TARGET_EPISODE,
+#                        tv_episode_type = episode,
+#                        couple_slug = couple_id
+#        ).select_related("reviewer")
+#
+#        reviewer_reviews = {}
+#
+#        for review in reviews:
+#            reviewer_name = get_normalized_reviewer_name(review.reviewer)
+#
+#            reviewer_reviews[reviewer_name] = {
+#                "rating" : review.rating,
+#                "review" : review.rating_justification
+#            }
+#
+#            season = episode.season_number
+#            show = season.show
+#
+#        response_data.append(
+#            {
+#                "show_title" : show.title,
+#                "season_number" : season.season_number,
+#                "episode_number" : episode.episode_number,
+#                "episode_title" : episode.episode_title,
+#                "air_date" : episode.air_date,
+#                "runtime" : episode.episode_runtime,
+#                "summary" : episode.summary,
+#                "show_id" : show.id,
+#                "season_id" : season.id,
+#                "episode_id" : episode.id,
+#                "reviews" : reviewer_reviews
+#            }
+#        )
+#
+#    return Response({"results" : response_data})
