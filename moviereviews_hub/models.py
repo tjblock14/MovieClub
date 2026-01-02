@@ -36,10 +36,10 @@ class Movie(models.Model):
 
 # This will contain all of the reviews on a movie
 class Review(models.Model):
-    movie = models.ForeignKey(Movie, on_delete = models.CASCADE)  # If a movie is deleted, delete all reviews associated with it
+    movie     = models.ForeignKey(Movie, on_delete = models.CASCADE)  # If a movie is deleted, delete all reviews associated with it
     couple_id = models.CharField(max_length = 20) # Track which couple this review is from
-    reviewer = models.CharField(max_length = 15)  # Track whose review this is
-    rating = models.FloatField(null=True, blank=True)
+    reviewer  = models.CharField(max_length = 15)  # Track whose review this is
+    rating    = models.FloatField(null=True, blank=True)
     rating_justification = models.TextField(blank=True, default="")
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    user      = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     # contains_spoiler = models.BooleanField(default = false)  probably will be handled elsewhere

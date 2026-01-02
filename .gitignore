@@ -1,0 +1,4 @@
+**/__pycache__/
+
+*.pyc
+/movieclub_backend/__pycache__/*.pyc

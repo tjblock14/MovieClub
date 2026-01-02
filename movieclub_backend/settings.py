@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',    # Needed for communication between wordpress/squarespace and django
     'moviereviews_hub',  # My movie club application
     'corsheaders',  # for logins
+    'tvshows_app',
 ]
 
 MIDDLEWARE = [
@@ -102,7 +103,11 @@ import dj_database_url
 import os
 
 DATABASES = {
-    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+    'default': dj_database_url.config
+    (
+        default='sqlite:///db.sqlite3',  # Fallback for local dev
+        conn_max_age=600,
+    )
 }
 
 
