@@ -2,20 +2,34 @@ from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.models import User  # For logins
 from django.contrib.postgres.fields import ArrayField
-
+from django.db.models import Q
 
 # Create your models here.
 
 # Information about a movie. This will be submitted by a user in the future. Things needed are the movie title, director,
 # starring actors, and the main genres of the movie
 class Movie(models.Model):
+    TMDB_Api_ID = models.PositiveIntegerField(null = True, blank = True, db_index = True)
+    
     title = models.CharField(max_length = 200)
     director = ArrayField(models.CharField(max_length = 100), default = list)
-
-    actors = ArrayField(models.CharField(max_length=200), default = list)      # default = list to avoid an issue I was having where
-                                                                               # every character was separated by a comma
+    actors = ArrayField(models.CharField(max_length=200), default = list)      # default = list to avoid an issue I was having where                                                                           # every character was separated by a comma
     genres = ArrayField(models.CharField(max_length = 150), default = list)
+    
+    release_yr = models.PositiveSmallIntegerField(null = True, blank = True)
+    runtime = models.PositiveSmallIntegerField(null = True, blank = True)
+    poster_url = models.CharField(max_length = 255, blank = True, default = "")
+    
     slug = models.SlugField(max_length = 200, unique = True, blank = True) # Automatically assigns a slug value to the title
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields = ["TMDB_Api_ID"],
+                condition = Q(TMDB_Api_ID__isnull = False),
+                name = "unique_movie_tmdb_api_Id_not_null"
+            )
+        ]
 
     def save(self, *args, **kwargs):
         if not self.slug:
