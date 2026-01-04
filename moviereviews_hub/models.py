@@ -16,6 +16,7 @@ class Movie(models.Model):
     actors = ArrayField(models.CharField(max_length=200), default = list)      # default = list to avoid an issue I was having where                                                                           # every character was separated by a comma
     genres = ArrayField(models.CharField(max_length = 150), default = list)
     
+    summary = models.TextField(blank=True, default="")
     release_yr = models.PositiveSmallIntegerField(null = True, blank = True)
     runtime = models.PositiveSmallIntegerField(null = True, blank = True)
     poster_url = models.CharField(max_length = 255, blank = True, default = "")

@@ -107,6 +107,9 @@ class MovieViewSet(viewsets.ModelViewSet):
         # Genres
         genres = [g.get("name") for g in (details.get("genres") or []) if g.get("name")]
 
+        summary = details.get("overview") or ""
+
+
         # Release year (TMDB uses release_date: "YYYY-MM-DD")
         release_date = details.get("release_date") or ""
         release_yr = None
@@ -125,6 +128,7 @@ class MovieViewSet(viewsets.ModelViewSet):
             director=directors,
             actors=actors,
             genres=genres,
+            summary = summary,
             release_yr=release_yr,
             runtime=runtime,
             poster_url=poster_url,
@@ -211,6 +215,7 @@ def couple_specific_reviews(request, couple_slug):
             "genres": movie.genres,
             "reviews": reviewer_reviews,
             "movie_id": movie.id,
+            "description" : movie.summary,
             "release_yr" : movie.release_yr,
             "runtime"    : movie.runtime,
             "poster_url" : movie.poster_url
