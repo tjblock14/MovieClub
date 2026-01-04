@@ -210,7 +210,10 @@ def couple_specific_reviews(request, couple_slug):
             "actors": movie.actors,
             "genres": movie.genres,
             "reviews": reviewer_reviews,
-            "movie_id": movie.id
+            "movie_id": movie.id,
+            "release_yr" : movie.release_yr,
+            "runtime"    : movie.runtime,
+            "poster_url" : movie.poster_url
         })
 
     return Response({"results": response_data})
