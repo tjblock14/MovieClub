@@ -215,7 +215,7 @@ def couple_specific_reviews(request, couple_slug):
             "genres": movie.genres,
             "reviews": reviewer_reviews,
             "movie_id": movie.id,
-            "description" : movie.summary,
+            "summary" : movie.summary,
             "release_yr" : movie.release_yr,
             "runtime"    : movie.runtime,
             "poster_url" : movie.poster_url
