@@ -63,8 +63,8 @@ class Command(BaseCommand):
             # --- Parse TMDB fields ---
             title = details.get("title") or details.get("original_title") or movie.title
 
-            # Description / overview
-            description = details.get("overview") or ""
+            # Summary / overview
+            summary = details.get("overview") or ""
 
             # Director(s)
             directors = []
@@ -92,7 +92,7 @@ class Command(BaseCommand):
             # Overwrite everything (except internal id + slug)
             updates = {
                 "title": title,
-                "description": description,
+                "summary": summary,
                 "director": directors,
                 "actors": actors,
                 "genres": genres,
