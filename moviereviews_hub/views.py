@@ -236,7 +236,10 @@ def club_average_ratings(_request):
             "movie__title",
             "movie__director",
             "movie__actors",
-            "movie__genres"
+            "movie__genres",
+            "movie__reviews",
+            "summary",
+            "poster_url"
         )
         .annotate(
             avg_rating=Avg("rating"),
