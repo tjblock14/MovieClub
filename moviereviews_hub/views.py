@@ -237,9 +237,8 @@ def club_average_ratings(_request):
             "movie__director",
             "movie__actors",
             "movie__genres",
-            "movie__reviews",
-            "summary",
-            "poster_url"
+            "movie__summary",
+            "movie__poster_url"
         )
         .annotate(
             avg_rating=Avg("rating"),
@@ -256,7 +255,9 @@ def club_average_ratings(_request):
             "actors": movie.get("movie__actors"),
             "genres": movie.get("movie__genres"),
             "avg_rating": round(movie["avg_rating"], 2) if movie["avg_rating"] is not None else None,
-            "num_reviews": movie["num_reviews"]
+            "num_reviews": movie["num_reviews"],
+            "summary"    : movie.get("movie__summary"),
+            "poster_url" : movie.get("movie__poster_url")
         })
 
     return Response({"results": results})
