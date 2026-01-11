@@ -170,7 +170,9 @@ class TvShowReviewsViewSet(viewsets.ModelViewSet):
                  "rob"     : "MomDad",
                  "terry"   : "MomDad",
                  "mia"     : "MiaLogan",
-                 "logan"   : "MiaLogan"
+                 "logan"   : "MiaLogan",
+                 "annie"   : "AnnieFelix",
+                 "felix"   : "AnnieFelix"
             }
         
         couple_id = user_to_couple.get(username, "uncategorized")

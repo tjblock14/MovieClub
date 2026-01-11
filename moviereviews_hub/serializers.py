@@ -49,8 +49,20 @@ class MovieSerializer(serializers.ModelSerializer):
 
     def validate_genres(self, value):
         return _clean_array_field(value, 'genres')
+    
+    def validate_actors(self, value):
+        return _clean_array_field(value, 'actors')
+
 
     def validate(self, data):
+        tmdb_in = data.get("TMDB_Api_ID", None)
+        if tmdb_in is not None:
+            qs = Movie.objects.filter(TMDB_Api_ID=tmdb_in)
+            if self.instance and getattr(self.instance, "pk", None):
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                raise serializers.ValidationError({"duplicate": "Movie already exists (TMDB id)."})
+    
         print("SERIALIZER DEBUG - validated incoming data:")
         for key, value in data.items():
             print(f"  {key}: {value} (type: {type(value)})")

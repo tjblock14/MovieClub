@@ -102,13 +102,26 @@ WSGI_APPLICATION = 'movieclub_backend.wsgi.application'
 import dj_database_url
 import os
 
-DATABASES = {
-    'default': dj_database_url.config
-    (
-        default='sqlite:///db.sqlite3',  # Fallback for local dev
-        conn_max_age=600,
-    )
-}
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+if DATABASE_URL:
+    # Render / production
+    DATABASES = {
+        "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+    }
+else:
+    # Local Postgres
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "movieclub_local_db",
+            "USER": "postgres",
+            "PASSWORD": "Slothman14",
+            "HOST": "127.0.0.1",
+            "PORT": "5432",
+        }
+    }
+
 
 
 # Password validation
